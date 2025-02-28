@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Κοινοχρήστα Πολυκατοικίας</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-4">Έλεγχος Οφειλών</h2>
+        <input type="password" id="password" placeholder="Εισάγετε τον κωδικό" class="w-full p-2 border rounded mb-4">
+        <button onclick="fetchData()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Σύνδεση</button>
+        <div id="result" class="mt-4 text-center"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const password = document.getElementById('password').value;
+            if (!password) return alert('Πληκτρολογήστε τον κωδικό');
+
+            const url = "https://script.google.com/macros/s/AKfycbxMC1gjBDcf9U6IrDIBpbsm7OTIfTFxWVIA1W_vF7sJOL-6J9KnM6mSE7eUuJGDvMXR/exec?password=" + encodeURIComponent(password);
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('result').innerHTML = `<p class='text-red-500'>${data.error}</p>`;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <p><strong>Ένοικος:</strong> ${data.tenant}</p>
+                        <p><strong>Οφειλή:</strong> €${data.owed}</p>
+                        <p><strong>Υπόλοιπο:</strong> €${data.balance}</p>
+                        <p><strong>Συνολική Αποταμίευση:</strong> €${data.total_savings}</p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = "<p class='text-red-500'>Σφάλμα στη φόρτωση δεδομένων</p>";
+            }
+        }
+    </script>
+</body>
+</html>
